@@ -79,12 +79,13 @@ class Boid {
         // }
     }
 
-    update() {
+    update(obstacles) {
         this.steering.set(0, 0, 0);
 
         this.separate();
         this.align();
         this.cohere();
+        this.avoidObstacles(obstacles);
 
         this.acceleration.add(this.steering);
 
@@ -182,6 +183,34 @@ class Boid {
             cohesionForce.limit(Boid.MAX_FORCE);
             this.debugSteer.cohesionForce = cohesionForce.copy();
             this.steering.add(cohesionForce.mult(Boid.COHESION_WEIGHT));
+        }
+    }
+
+    avoidObstacles(obstacles) {
+        let avoidance = createVector(0, 0, 0);
+        let total = 0;
+    
+        for (let obstacle of obstacles) {
+            let diff = p5.Vector.sub(this.position, obstacle.position);
+            let dist = diff.mag();
+    
+            let buffer = 10; // buffer before they actually touch the obstacle
+            let safeDistance = obstacle.radius + buffer;
+    
+            if (dist < safeDistance) {
+                // Repel stronger when deeper in
+                let force = diff.copy().normalize().mult((safeDistance - dist) / safeDistance);
+                avoidance.add(force);
+                total++;
+            }
+        }
+    
+        if (total > 0) {
+            avoidance.div(total);
+            avoidance.setMag(Boid.MAX_SPEED);
+            avoidance.sub(this.velocity);
+            avoidance.limit(Boid.MAX_FORCE);
+            this.steering.add(avoidance.mult(4)); // weight of avoidance
         }
     }
 }

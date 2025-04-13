@@ -11,8 +11,8 @@ class Obstacle {
         stroke(255, 0, 0);
         strokeWeight(1);
     
-        let latDiv = 12;  // latitude divisions
-        let lonDiv = 24;  // longitude divisions
+        let latDiv = 6;  // latitude divisions
+        let lonDiv = 12;  // longitude divisions
     
         // latitude rings (horizontal "slices")
         for (let i = 0; i <= latDiv; i++) {

@@ -84,7 +84,7 @@ function setup() {
     enableScrollControl(rotationSlider);
     row4.child(rotation.wrapper);
 
-    let elevation = makeLabeledSlider("Elevation", -500, 500, -180, 10);
+    let elevation = makeLabeledSlider("Elevation", -500, 500, -120, 10);
     elevationSlider = elevation.slider;
     enableScrollControl(elevationSlider);
     row4.child(elevation.wrapper);
@@ -105,7 +105,17 @@ function setup() {
 
     // initializing flock and obstacles
     flock = new Flock(numberOfBoids);
-    obstacles.push(new Obstacle(createVector(0, 0, 0), 20));
+    obstacles.push(new Obstacle(createVector(0, 0, 0), 20)); //center obstacle
+    let r = 20; // radius for all corner obstacles
+    let w = width / 2;
+    let h = height / 2;
+    let d = depth / 2;
+
+    // 4 corner obstacles
+    obstacles.push(new Obstacle(createVector(-w, -h, d), r)); // front-top-left
+    obstacles.push(new Obstacle(createVector(w, h, d), r)); // front-bottom-right
+    obstacles.push(new Obstacle(createVector(w, -h, -d), r)); // back-top-right
+    obstacles.push(new Obstacle(createVector(-w, h, -d), r)); // back-bottom-left
 }
 
 function draw() {
@@ -144,7 +154,7 @@ function draw() {
     // drawing boids
     for (let boid of flock) {
         boid.edges();
-        boid.update();
+        boid.update(obstacles);
         boid.show();
     }
 
