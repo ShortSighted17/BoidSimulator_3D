@@ -74,17 +74,17 @@ function setup() {
 
     // row 4: camera controls
     let row4 = createDiv().style('display', 'flex').style('gap', '24px').style('margin-bottom', '8px');
-    let zoom = makeLabeledSlider("Zoom", 100, 2000, 1400, 10);
+    let zoom = makeLabeledSlider("Zoom", 100, 2000, 1700, 10);
     zoomSlider = zoom.slider;
     enableScrollControl(zoomSlider);
     row4.child(zoom.wrapper);
 
-    let rotation = makeLabeledSlider("Rotation", 0, 360, 0, 1);
+    let rotation = makeLabeledSlider("Rotation", 0, 360, 75, 1);
     rotationSlider = rotation.slider;
     enableScrollControl(rotationSlider);
     row4.child(rotation.wrapper);
 
-    let elevation = makeLabeledSlider("Elevation", -500, 500, 0, 10);
+    let elevation = makeLabeledSlider("Elevation", -500, 500, -180, 10);
     elevationSlider = elevation.slider;
     enableScrollControl(elevationSlider);
     row4.child(elevation.wrapper);
@@ -103,7 +103,9 @@ function setup() {
     settingsPanel.child(row4);
     settingsPanel.child(row5);
 
+    // initializing flock and obstacles
     flock = new Flock(numberOfBoids);
+    obstacles.push(new Obstacle(createVector(0, 0, 0), 20));
 }
 
 function draw() {
@@ -139,10 +141,16 @@ function draw() {
     // drawing the box wireframe
     drawBoxGrid(width, height, depth, 10);
 
+    // drawing boids
     for (let boid of flock) {
         boid.edges();
         boid.update();
         boid.show();
+    }
+
+    //drawing obstacles
+    for (let obstacle of obstacles) {
+        obstacle.show();
     }
 }
 
