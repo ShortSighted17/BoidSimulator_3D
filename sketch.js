@@ -2,6 +2,7 @@
 let numberOfBoids = 100;
 let depth = 400;
 let flock;
+let obstacles = [];
 
 
 // sliders
@@ -136,13 +137,7 @@ function draw() {
     flock.updateNeighbors();
 
     // drawing the box wireframe
-    noFill();
-    stroke(100);
-    strokeWeight(1);
-    push();
-    translate(0, 0, 0); // center of the box
-    box(width, height, depth); // size of the world box
-    pop();
+    drawBoxGrid(width, height, depth, 10);
 
     for (let boid of flock) {
         boid.edges();
@@ -188,3 +183,67 @@ function makeLabeledSlider(label, min, max, start, step = 1) {
 
     return { wrapper, slider, valueSpan };
 }
+
+function drawBoxGrid(w, h, d, step = 50) {
+    stroke(100, 100, 255, 120); // light bluish grid
+    strokeWeight(1);
+    noFill();
+
+    // Front (+Z)
+    push();
+    translate(0, 0, d / 2);
+    drawGrid(w, h, step);
+    pop();
+
+    // Back (-Z)
+    push();
+    translate(0, 0, -d / 2);
+    rotateY(PI);
+    drawGrid(w, h, step);
+    pop();
+
+    // Right (+X)
+    push();
+    translate(w / 2, 0, 0);
+    rotateY(HALF_PI);
+    drawGrid(d, h, step);
+    pop();
+
+    // Left (-X)
+    push();
+    translate(-w / 2, 0, 0);
+    rotateY(HALF_PI);
+    drawGrid(d, h, step);
+    pop();
+
+    // Top (-Y)
+    push();
+    translate(0, -h / 2, 0);
+    rotateX(HALF_PI);
+    drawGrid(w, d, step);
+    pop();
+
+    // Bottom (+Y)
+    push();
+    translate(0, h / 2, 0);
+    rotateX(HALF_PI);
+    drawGrid(w, d, step);
+    pop();
+}
+
+function drawGrid(w, h, step, divisions = 4) {
+    step = w / divisions;
+
+    for (let i = 0; i <= divisions; i++) {
+        let x = -w / 2 + i * step;
+        line(x, -h / 2, 0, x, h / 2, 0);
+    }
+
+    step = h / divisions;
+    for (let i = 0; i <= divisions; i++) {
+        let y = -h / 2 + i * step;
+        line(-w / 2, y, 0, w / 2, y, 0);
+    }
+}
+
+
