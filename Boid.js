@@ -71,7 +71,7 @@ class Boid {
 
         pop();
 
-        // Draw debug vectors
+        // // Draw debug vectors
         // if (debug) {
         //     this.drawVector(this.debugSteer.separationForce, color(255, 0, 0));   // red
         //     this.drawVector(this.debugSteer.alignmentForce, color(0, 255, 0));    // green
@@ -80,19 +80,20 @@ class Boid {
     }
 
     update() {
+        this.steering.set(0, 0, 0);
+
         this.separate();
         this.align();
         this.cohere();
+
         this.acceleration.add(this.steering);
 
         let desiredVelocity = p5.Vector.add(this.velocity, this.acceleration);
         this.velocity.lerp(desiredVelocity, 0.1); // lower = smoother
-        this.velocity.add(this.acceleration);
 
         this.velocity.limit(Boid.MAX_SPEED);
         this.position.add(this.velocity);
-        this.acceleration.mult(0);
-        this.steering.mult(0);
+        this.acceleration.set(0, 0, 0);
     }
 
     // globals are now controlled through the sliders
@@ -151,7 +152,7 @@ class Boid {
 
         if (total > 0) {
             alignmentForce.div(total); // get average velocity of neighbors
-            // alignmentForce.setMag(Boid.MAX_SPEED); // boid will want to go full speed in the average direction
+            alignmentForce.setMag(Boid.MAX_SPEED); // boid will want to go full speed in the average direction
             alignmentForce.sub(this.velocity); // the boid steers to crrect current velocity
             alignmentForce.limit(Boid.MAX_FORCE); // prevent wild steering
             this.debugSteer.alignmentForce = alignmentForce.copy();
@@ -184,3 +185,4 @@ class Boid {
         }
     }
 }
+
