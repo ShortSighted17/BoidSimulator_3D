@@ -55,7 +55,7 @@ class Boid {
 
     }
 
-    update(obstacles) {
+    update() {
         this.steering.set(0, 0, 0);
 
         this.separate();

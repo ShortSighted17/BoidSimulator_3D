@@ -1,5 +1,5 @@
 // some global variables
-let numberOfBoids = 100;
+let numberOfBoids = 300;
 let depth = 400;
 let flock;
 let obstacles = [];
@@ -18,7 +18,7 @@ let debugCheckbox;
 
 function setup() {
 
-    createCanvas(600, 400, WEBGL);
+    createCanvas(900, 600, WEBGL);
     // create the settings panel
     let settingsPanel = createDiv()
         .style('margin', '10px')
