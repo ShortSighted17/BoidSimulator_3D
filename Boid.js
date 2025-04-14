@@ -6,7 +6,6 @@ class Boid {
             random(height),
             random(depth)
         );
-        // this.position = createVector(0, 0, 0);
         this.velocity = p5.Vector.random3D().mult(2);
         this.acceleration = createVector(0, 0, 0);
         this.steering = createVector(0, 0, 0);
