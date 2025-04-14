@@ -11,11 +11,6 @@ class Boid {
         this.acceleration = createVector(0, 0, 0);
         this.steering = createVector(0, 0, 0);
         this.neighbors = []; // an array of boids in sight. [[neighbor, distance]...]
-        this.debugSteer = {
-            separationForce: createVector(0, 0, 0),
-            alignmentForce: createVector(0, 0, 0),
-            cohesionForce: createVector(0, 0, 0)
-        };
     }
 
     // defines behaviour when getting to an edge
@@ -34,24 +29,11 @@ class Boid {
         if (this.position.z < -halfD) this.position.z =  halfD;
     }
 
-    // debug purposes: will use that to draw the different force vectors
-    drawVector(vec, col) {
-        push();
-        stroke(col);
-        strokeWeight(2);
-        let scaled = vec.copy().mult(25); // scale up for visibility
-        line(this.position.x, this.position.y,
-            this.position.x + scaled.x, this.position.y + scaled.y);
-        pop();
-    }
-
     // draws the boid on the screen.
-    // how is the boid represented? (currently a triangle)
     show() {
         // Setup
         push();
         translate(this.position.x, this.position.y, this.position.z);
-        // translate(0, 0, 0);
         
         // align the boid with the velocity
         let dir = this.velocity.copy().normalize();
@@ -71,12 +53,6 @@ class Boid {
 
         pop();
 
-        // // Draw debug vectors
-        // if (debug) {
-        //     this.drawVector(this.debugSteer.separationForce, color(255, 0, 0));   // red
-        //     this.drawVector(this.debugSteer.alignmentForce, color(0, 255, 0));    // green
-        //     this.drawVector(this.debugSteer.cohesionForce, color(0, 100, 255));   // blue
-        // }
     }
 
     update(obstacles) {
@@ -85,7 +61,6 @@ class Boid {
         this.separate();
         this.align();
         this.cohere();
-        this.avoidObstacles(obstacles);
 
         this.acceleration.add(this.steering);
 
@@ -133,7 +108,6 @@ class Boid {
             separationForce.setMag(Boid.MAX_SPEED);
             separationForce.sub(this.velocity);
             separationForce.limit(Boid.MAX_FORCE);
-            this.debugSteer.separationForce = separationForce.copy(); // store for debug
             this.steering.add(separationForce.mult(Boid.SEPERATION_WEIGHT));
         }
     }
@@ -156,7 +130,6 @@ class Boid {
             alignmentForce.setMag(Boid.MAX_SPEED); // boid will want to go full speed in the average direction
             alignmentForce.sub(this.velocity); // the boid steers to crrect current velocity
             alignmentForce.limit(Boid.MAX_FORCE); // prevent wild steering
-            this.debugSteer.alignmentForce = alignmentForce.copy();
             this.steering.add(alignmentForce.mult(Boid.ALIGNMENT_WEIGHT));
         }
     }
@@ -181,37 +154,9 @@ class Boid {
             cohesionForce.setMag(Boid.MAX_SPEED); // where we want to go
             cohesionForce.sub(this.velocity);
             cohesionForce.limit(Boid.MAX_FORCE);
-            this.debugSteer.cohesionForce = cohesionForce.copy();
             this.steering.add(cohesionForce.mult(Boid.COHESION_WEIGHT));
         }
     }
 
-    avoidObstacles(obstacles) {
-        let avoidance = createVector(0, 0, 0);
-        let total = 0;
-    
-        for (let obstacle of obstacles) {
-            let diff = p5.Vector.sub(this.position, obstacle.position);
-            let dist = diff.mag();
-    
-            let buffer = 10; // buffer before they actually touch the obstacle
-            let safeDistance = obstacle.radius + buffer;
-    
-            if (dist < safeDistance) {
-                // Repel stronger when deeper in
-                let force = diff.copy().normalize().mult((safeDistance - dist) / safeDistance);
-                avoidance.add(force);
-                total++;
-            }
-        }
-    
-        if (total > 0) {
-            avoidance.div(total);
-            avoidance.setMag(Boid.MAX_SPEED);
-            avoidance.sub(this.velocity);
-            avoidance.limit(Boid.MAX_FORCE);
-            this.steering.add(avoidance.mult(4)); // weight of avoidance
-        }
-    }
 }
 

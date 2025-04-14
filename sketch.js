@@ -79,43 +79,25 @@ function setup() {
     enableScrollControl(zoomSlider);
     row4.child(zoom.wrapper);
 
-    let rotation = makeLabeledSlider("Rotation", 0, 360, 75, 1);
+    let rotation = makeLabeledSlider("Rotation", 0, 360, 60, 1);
     rotationSlider = rotation.slider;
     enableScrollControl(rotationSlider);
     row4.child(rotation.wrapper);
 
-    let elevation = makeLabeledSlider("Elevation", -500, 500, -120, 10);
+    let elevation = makeLabeledSlider("Elevation", -500, 500, 200, 10);
     elevationSlider = elevation.slider;
     enableScrollControl(elevationSlider);
     row4.child(elevation.wrapper);
-
-    // row 5: debug toggle
-    let row5 = createDiv().style('display', 'flex').style('align-items', 'center').style('gap', '12px');
-    debugCheckbox = createCheckbox('Debug', false);
-    row5.child(debugCheckbox);
-
-
 
     // add all rows to the panel
     settingsPanel.child(row1);
     settingsPanel.child(row2);
     settingsPanel.child(row3);
     settingsPanel.child(row4);
-    settingsPanel.child(row5);
 
     // initializing flock and obstacles
     flock = new Flock(numberOfBoids);
-    obstacles.push(new Obstacle(createVector(0, 0, 0), 20)); //center obstacle
-    let r = 20; // radius for all corner obstacles
-    let w = width / 2;
-    let h = height / 2;
-    let d = depth / 2;
 
-    // 4 corner obstacles
-    obstacles.push(new Obstacle(createVector(-w, -h, d), r)); // front-top-left
-    obstacles.push(new Obstacle(createVector(w, h, d), r)); // front-bottom-right
-    obstacles.push(new Obstacle(createVector(w, -h, -d), r)); // back-top-right
-    obstacles.push(new Obstacle(createVector(-w, h, -d), r)); // back-bottom-left
 }
 
 function draw() {
@@ -126,7 +108,7 @@ function draw() {
     let angle = radians(rotationSlider.value()); // convert degrees to radians
     let camX = zoomValue * sin(angle);
     let camZ = zoomValue * cos(angle);
-    let camY = elevationSlider.value();
+    let camY = -elevationSlider.value();
 
     // camera(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
     camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0); // look at center
@@ -144,8 +126,6 @@ function draw() {
         cohWeight: cohWeightSlider.value()
     });
 
-    debug = debugCheckbox.checked();
-
     flock.updateNeighbors();
 
     // drawing the box wireframe
@@ -154,14 +134,10 @@ function draw() {
     // drawing boids
     for (let boid of flock) {
         boid.edges();
-        boid.update(obstacles);
+        boid.update();
         boid.show();
     }
 
-    //drawing obstacles
-    for (let obstacle of obstacles) {
-        obstacle.show();
-    }
 }
 
 
